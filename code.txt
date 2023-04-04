@@ -1,0 +1,26 @@
+Repository repository = git.getRepository();
+    String branch = repository.getBranch();
+    ObjectId head = repository.resolve("refs/heads/"+branch+"^{tree}");
+    git.fetch();
+    System.out.println(branch);
+
+    Config storedConfig = repository.getConfig();
+
+    Set<String> remotes = storedConfig.getSubsections("remote");
+
+    System.out.println(remotes);
+
+    ObjectId fetchHead = repository.resolve("FETCH_HEAD^{tree}");
+
+    ObjectReader reader = repository.newObjectReader();
+    CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+    oldTreeIter.reset(reader, head);
+    CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+    newTreeIter.reset(reader, fetchHead);
+    List<DiffEntry> diffs= git.diff().setShowNameAndStatusOnly(true)
+            .setNewTree(newTreeIter)
+            .setOldTree(oldTreeIter)
+            .call();
+    for(DiffEntry entry : diffs) {
+        System.out.println(entry.toString());
+    }
