@@ -1,0 +1,43 @@
+tableViewer.getTable().addMouseListener(new MouseAdapter() {
+    @Override
+    public void mouseDoubleClick(MouseEvent event) {
+        Point point = new Point(event.x, event.y);
+        TableItem item = tableViewer.getTable().getItem(point);
+        if (item != null) {
+            for (int columnIndex = 0; columnIndex < tableViewer.getTable().getColumnCount(); columnIndex++) {
+                Rectangle bounds = item.getBounds(columnIndex);
+                if (bounds.contains(point)) {
+                    final int row = tableViewer.getTable().indexOf(item);
+                    final int column = columnIndex;
+                    
+                    // Hücre düzenlemesini baslatmak için bir TextEditor olusturun
+                    TextEditor editor = new TextEditor(tableViewer.getTable());
+                    editor.setEditor(new Text(tableViewer.getTable(), SWT.NONE), item, column);
+                    
+                    // TextEditor'in içerigini mevcut hücre degeriyle baslatin
+                    editor.getEditor().setText(item.getText(column));
+                    
+                    // TextEditor'in düzenleme tamamlandiginda yapilacak islemler
+                    editor.getEditor().addModifyListener(new ModifyListener() {
+                        @Override
+                        public void modifyText(ModifyEvent e) {
+                            Text text = (Text) editor.getEditor();
+                            String modifiedValue = text.getText();
+                            
+                            // Hücre degerini güncellemek için gerekli islemleri yapabilirsiniz
+                            tableViewer.getTable().getItem(row).setText(column, modifiedValue);
+                            
+                            // Sunucuya güncellenen degeri göndermek için gerekli islemleri yapabilirsiniz
+                        }
+                    });
+                    
+                    // TextEditor'i etkinlestirin ve düzenlemeyi baslatin
+                    editor.activate();
+                    editor.getEditor().setFocus();
+                    
+                    break;
+                }
+            }
+        }
+    }
+});
