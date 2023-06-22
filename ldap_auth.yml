@@ -1,0 +1,25 @@
+- name: Grafana LDAP Doğrulaması Yapılandırması
+  hosts: grafana
+  become: true
+  tasks:
+    - name: LDAP yapılandırma dosyasını kopyala
+      copy:
+        src: files/ldap.toml
+        dest: /etc/grafana/ldap.toml
+        owner: grafana
+        group: grafana
+        mode: "0644"
+
+    - name: Grafana yapılandırma dosyasını düzenle
+      lineinfile:
+        path: /etc/grafana/grafana.ini
+        regex: "^;? *auth.ldap.*"
+        line: "auth.ldap.enabled = true"
+      notify:
+        - Restart Grafana
+
+handlers:
+  - name: Restart Grafana
+    systemd:
+      name: grafana-server
+      state: restarted
