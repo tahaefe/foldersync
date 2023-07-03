@@ -1,0 +1,19 @@
+---
+- name: Grafana Kullanıcı Yapılandırması
+  hosts: grafana_servers
+  become: yes
+
+  tasks:
+    - name: defaults.ini dosyasındaki [users] bloğunu güncelle
+      replace:
+        path: /etc/grafana/defaults.ini
+        regexp: '(^\[users\]$[\s\S]*?^allow_sign_up\s*=\s*).*$'
+        replace: '\1true'
+        backup: yes
+
+    - name: defaults.ini dosyasındaki [users] bloğunu güncelle
+      replace:
+        path: /etc/grafana/defaults.ini
+        regexp: '(^\[users\]$[\s\S]*?^allow_org_create\s*=\s*).*$'
+        replace: '\1true'
+        backup: yes
