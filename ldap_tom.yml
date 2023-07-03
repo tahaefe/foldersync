@@ -1,0 +1,18 @@
+- name: LDAP yapılandırma dosyasındaki parametreleri güncelle
+  hosts: grafana
+  become: true
+  tasks:
+    - name: Parametreleri güncelle
+      blockinfile:
+        path: /etc/grafana/ldap.toml
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - LDAP Configuration"
+        block: |
+          [[servers]]
+          host = "ldap://<FreeIPA_Sunucu_IP>"
+          port = 389
+          use_ssl = false
+          start_tls = false
+          bind_dn = "uid=admin,cn=users,cn=accounts,dc=example,dc=com"
+          bind_password = "<admin_kullanıcı_parolası>"
+          search_filter = "(uid=%s)"
+          search_base_dns = ["cn=users,cn=accounts,dc=example,dc=com"]
