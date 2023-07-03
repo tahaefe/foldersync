@@ -4,19 +4,23 @@
   become: yes
 
   tasks:
-    - name: defaults.ini dosyasında [auth.ldap] bloğunu düzenle
-      lineinfile:
+    - name: defaults.ini dosyasındaki [auth.ldap] bloğunu güncelle
+      replace:
         path: /etc/grafana/defaults.ini
-        regexp: '^\[auth.ldap\].*$'
-        line: '[auth.ldap]'
-        backrefs: yes
-      register: auth_ldap_changed
-      changed_when: auth_ldap_changed.changed
+        regexp: '(^\[auth\.ldap\]$[\s\S]*?^enabled\s*=\s*).*$'
+        replace: '\1true'
+        backup: yes
 
-    - name: defaults.ini dosyasında config_file değerini düzenle
-      lineinfile:
+    - name: defaults.ini dosyasındaki [auth.ldap] bloğunu güncelle
+      replace:
         path: /etc/grafana/defaults.ini
-        regexp: '^config_file = /etc/grafana/ldap.toml$'
-        line: 'config_file = /etc/grafana/ldap.toml'
-      register: config_file_changed
-      changed_when: config_file_changed.changed
+        regexp: '(^\[auth\.ldap\]$[\s\S]*?^config_file\s*=\s*).*$'
+        replace: '\1/etc/grafana/ldap.toml'
+        backup: yes
+
+    - name: defaults.ini dosyasındaki [auth.ldap] bloğunu güncelle
+      replace:
+        path: /etc/grafana/defaults.ini
+        regexp: '(^\[auth\.ldap\]$[\s\S]*?^allow_sign_up\s*=\s*).*$'
+        replace: '\1false'
+        backup: yes
